@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salla SDK Examples - Mukhawara</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Salla Twilight SDK Examples</h1>
+        <p class="lead">Connected to: <strong>mukhaura.salla.sa</strong></p>
+        <p>This page demonstrates basic Salla SDK integration examples for your Mukhawara store.</p>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3>Cart Operations</h3>
+                <button class="btn btn-primary me-2" onclick="addSampleProduct()">Add Sample Product</button>
+                <button class="btn btn-info me-2" onclick="getCartDetails()">Get Cart Details</button>
+                <button class="btn btn-warning" onclick="clearCart()">Clear Cart</button>
+                
+                <div class="mt-3">
+                    <h4>Cart Status:</h4>
+                    <div id="cart-status">Loading...</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h3>Wishlist Operations</h3>
+                <button class="btn btn-primary me-2" onclick="addToWishlist()">Add to Wishlist</button>
+                <button class="btn btn-info" onclick="getWishlist()">Get Wishlist</button>
+                
+                <div class="mt-3">
+                    <h4>Wishlist Status:</h4>
+                    <div id="wishlist-status">Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3>Authentication</h3>
+                <button class="btn btn-success me-2" onclick="checkAuthStatus()">Check Auth Status</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+                
+                <div class="mt-3">
+                    <h4>Auth Status:</h4>
+                    <div id="auth-status">Loading...</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h3>Product Information</h3>
+                <button class="btn btn-success me-2" onclick="getRealProducts()">Get Real Products</button>
+                <button class="btn btn-primary me-2" onclick="getProductInfo()">Get Sample Product Info</button>
+                <button class="btn btn-info" onclick="getCategories()">Get Categories</button>
+                
+                <div class="mt-3">
+                    <h4>Product Info:</h4>
+                    <div id="product-info">Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3>Event Logs</h3>
+                <div id="event-log" class="border p-3" style="height: 200px; overflow-y: auto; background: #f8f9fa;">
+                    <p>Event logs will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Salla SDK -->
+    <script src="https://cdn.salla.network/js/twilight/latest/twilight.js"></script>
+    <script>
+        // Sample product ID for demonstration
+        let SAMPLE_PRODUCT_ID = "146458242";
+        
+        function initializeSallaSDK() {
+            // Initialize Salla SDK for mukhaura store
+            if (typeof salla !== 'undefined') {
+                logEvent('Salla SDK object found, initializing with store config...');
+                
+                try {
+                    // Initialize with your mukhaura store settings
+                    salla.init({
+                        debug: true, // disable in production
+                        language_code: 'ar', // Arabic for Saudi store
+                        store: {
+                            id: 229278595, // Your store ID from the URL
+                            url: "https://mukhaura.salla.sa"
+                        }
+                    });
+                    
+                    logEvent('Salla SDK initialized successfully for mukhaura store');
+                    
+                    // Check if APIs are available
+                    if (typeof salla.cart !== 'undefined') {
+                        logEvent('Salla cart API available');
+                    } else {
+                        logEvent('Salla cart API not available');
+                    }
+                    
+                    if (typeof salla.auth !== 'undefined') {
+                        logEvent('Salla auth API available');
+                    } else {
+                        logEvent('Salla auth API not available');
+                    }
+                    
+                    if (typeof salla.product !== 'undefined') {
+                        logEvent('Salla product API available');
+                    } else {
+                        logEvent('Salla product API not available');
+                    }
+                    
+                    if (typeof salla.wishlist !== 'undefined') {
+                        logEvent('Salla wishlist API available');
+                    } else {
+                        logEvent('Salla wishlist API not available');
+                    }
+                    
+                    // Set up event listeners
+                    setupEventListeners();
+                    
+                    // Initial status updates
+                    checkAuthStatus();
+                    getCartDetails();
+                    
+                } catch (error) {
+                    logEvent(`SDK initialization error: ${error.message}`);
+                    // Try minimal initialization
+                    try {
+                        salla.init();
+                        logEvent('Salla SDK initialized with minimal config');
+                        setupEventListeners();
+                    } catch (retryError) {
+                        logEvent(`Minimal init failed: ${retryError.message}`);
+                    }
+                }
+                
+            } else {
+                logEvent('Salla SDK not loaded yet, retrying...');
+                // Retry after a short delay
+                setTimeout(initializeSallaSDK, 500);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSallaSDK);
+        } else {
+            initializeSallaSDK();
+        }
+        
+        function setupEventListeners() {
+            // Cart events
+            salla.cart.event.onItemAdded((response, product_id) => {
+                logEvent(`Item added to cart: Product ID ${product_id}`);
+                getCartDetails();
+            });
+            
+            salla.cart.event.onItemDeleted((response, product_id) => {
+                logEvent(`Item removed from cart: Product ID ${product_id}`);
+                getCartDetails();
+            });
+            
+            // Wishlist events
+            salla.event.wishlist.onAdded((response, product_id) => {
+                logEvent(`Item added to wishlist: Product ID ${product_id}`);
+                getWishlist();
+            });
+            
+            salla.event.wishlist.onRemoved((response, product_id) => {
+                logEvent(`Item removed from wishlist: Product ID ${product_id}`);
+                getWishlist();
+            });
+            
+            // Auth events
+            salla.event.auth.onLoginSuccess((response) => {
+                logEvent('User logged in successfully');
+                checkAuthStatus();
+            });
+            
+            salla.event.auth.onLogout(() => {
+                logEvent('User logged out');
+                checkAuthStatus();
+            });
+            
+            // Product events (from Salla documentation)
+            if (salla.product && salla.product.event) {
+                salla.product.event.onProductListFetchSucceeded((response) => {
+                    logEvent(`Product list fetch succeeded: ${response.data?.length || 0} products`);
+                });
+                
+                salla.product.event.onProductListFetchFailed((errorMessage) => {
+                    logEvent(`Product list fetch failed: ${errorMessage}`);
+                });
+                
+                // Product detail events (corrected event names from documentation)
+                salla.product.event.onDetailFetched((response) => {
+                    logEvent(`Product detail fetched: ${response.data?.name || 'Unknown product'}`);
+                });
+                
+                salla.product.event.onDetailFetchFailed((errorMessage) => {
+                    logEvent(`Product detail fetch failed: ${errorMessage}`);
+                });
+            }
+        }
+        
+        function addSampleProduct() {
+            if (typeof salla === 'undefined' || !salla.cart) {
+                logEvent('Error: Salla SDK or cart API not available');
+                return;
+            }
+            
+            const cartItem = {
+                id: SAMPLE_PRODUCT_ID,
+                quantity: 1,
+                notes: "Added from examples page"
+            };
+            
+            salla.cart.addItem(cartItem).then(response => {
+                logEvent('Sample product added to cart successfully');
+                getCartDetails(); // Refresh cart display
+            }).catch(error => {
+                logEvent(`Error adding product to cart: ${error.message}`);
+            });
+        }
+        
+        function getCartDetails() {
+            if (typeof salla === 'undefined' || !salla.cart) {
+                document.getElementById('cart-status').innerHTML = '<p class="text-danger">Error: Salla SDK or cart API not available</p>';
+                return;
+            }
+            
+            const statusDiv = document.getElementById('cart-status');
+            statusDiv.innerHTML = 'Loading...';
+            
+            salla.cart.latest().then(response => {
+                const cart = response.data;
+                const itemCount = cart.items ? cart.items.length : 0;
+                statusDiv.innerHTML = `
+                    <p><strong>Items:</strong> ${itemCount}</p>
+                    <p><strong>Total:</strong> ${cart.total || '0.00'} SAR</p>
+                    <p><strong>Subtotal:</strong> ${cart.subtotal || '0.00'} SAR</p>
+                `;
+                logEvent(`Cart retrieved: ${itemCount} items, total: ${cart.total || '0.00'} SAR`);
+            }).catch(error => {
+                statusDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                logEvent(`Error fetching cart: ${error.message}`);
+            });
+        }
+        
+        function clearCart() {
+            // This would typically require cart clearing functionality
+            logEvent('Cart clearing not implemented in this example');
+        }
+        
+        function addToWishlist() {
+            if (typeof salla === 'undefined') {
+                logEvent('Error: Salla SDK not loaded yet');
+                return;
+            }
+            
+            salla.wishlist.add(SAMPLE_PRODUCT_ID).then(response => {
+                logEvent('Sample product added to wishlist successfully');
+            }).catch(error => {
+                logEvent(`Error adding to wishlist: ${error.message}`);
+            });
+        }
+        
+        function getWishlist() {
+            if (typeof salla === 'undefined') {
+                document.getElementById('wishlist-status').innerHTML = '<p class="text-danger">Error: Salla SDK not loaded yet</p>';
+                return;
+            }
+            
+            const statusDiv = document.getElementById('wishlist-status');
+            statusDiv.innerHTML = 'Loading...';
+            
+            // This would typically fetch wishlist items
+            statusDiv.innerHTML = '<p>Wishlist functionality requires specific API endpoints</p>';
+        }
+        
+        function checkAuthStatus() {
+            if (typeof salla === 'undefined') {
+                document.getElementById('auth-status').innerHTML = '<p class="text-danger">Error: Salla SDK not loaded yet</p>';
+                return;
+            }
+            
+            const statusDiv = document.getElementById('auth-status');
+            statusDiv.innerHTML = 'Loading...';
+            
+            salla.auth.refresh().then(response => {
+                if (response.data.access_token) {
+                    statusDiv.innerHTML = '<p class="text-success">✓ User is logged in</p>';
+                } else {
+                    statusDiv.innerHTML = '<p class="text-warning">⚠ User is not logged in</p>';
+                }
+            }).catch(error => {
+                statusDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+            });
+        }
+        
+        function logout() {
+            if (typeof salla === 'undefined') {
+                logEvent('Error: Salla SDK not loaded yet');
+                return;
+            }
+            
+            salla.auth.logout().then(response => {
+                logEvent('User logged out successfully');
+            }).catch(error => {
+                logEvent(`Error during logout: ${error.message}`);
+            });
+        }
+        
+        function getRealProducts() {
+            if (typeof salla === 'undefined' || !salla.product) {
+                document.getElementById('product-info').innerHTML = '<p class="text-danger">Error: Salla SDK or product API not available</p>';
+                return;
+            }
+            
+            const statusDiv = document.getElementById('product-info');
+            statusDiv.innerHTML = 'Loading real products from mukhaura store...';
+            
+            // Use the correct fetch method from Salla documentation
+            const queryParams = {
+                source: 'latest', // Get latest products
+                limit: 10
+            };
+            
+            salla.product.fetch(queryParams).then(response => {
+                const products = response.data;
+                if (products && products.length > 0) {
+                    // Use the first real product ID
+                    const realProductId = products[0].id;
+                    SAMPLE_PRODUCT_ID = realProductId;
+                    
+                    statusDiv.innerHTML = `
+                        <p><strong>Found ${products.length} products</strong></p>
+                        <p><strong>Sample Product ID:</strong> ${realProductId}</p>
+                        <p><strong>Product Name:</strong> ${products[0].name}</p>
+                        <p><strong>Price:</strong> ${products[0].price?.amount || 'N/A'} ${products[0].price?.currency || 'SAR'}</p>
+                        <p><strong>Status:</strong> ${products[0].status}</p>
+                        <p><strong>Available:</strong> ${products[0].is_available ? 'Yes' : 'No'}</p>
+                        <p class="text-success">✓ Now using real product from your store!</p>
+                    `;
+                    
+                    logEvent(`Loaded real products. Using product ID: ${realProductId}`);
+                } else {
+                    statusDiv.innerHTML = '<p class="text-warning">No products found in store</p>';
+                    logEvent('No products found in store');
+                }
+            }).catch(error => {
+                statusDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                logEvent(`Error fetching products: ${error.message}`);
+            });
+        }
+        
+        function getProductInfo() {
+            if (typeof salla === 'undefined' || !salla.product) {
+                document.getElementById('product-info').innerHTML = '<p class="text-danger">Error: Salla SDK or product API not available</p>';
+                return;
+            }
+            
+            const infoDiv = document.getElementById('product-info');
+            infoDiv.innerHTML = 'Loading...';
+            
+            // Use the correct getDetails method from Salla documentation
+            const advancedItems = ["images", "sold_quantity", "category", "rating", "brand"];
+            
+            salla.product.getDetails(SAMPLE_PRODUCT_ID, advancedItems).then(response => {
+                const product = response.data;
+                infoDiv.innerHTML = `
+                    <p><strong>Product Name:</strong> ${product.name || 'Sample Product'}</p>
+                    <p><strong>Price:</strong> ${product.price?.amount || 'N/A'} ${product.price?.currency || 'SAR'}</p>
+                    <p><strong>SKU:</strong> ${product.sku || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${product.status || 'N/A'}</p>
+                    <p><strong>Available:</strong> ${product.is_available ? 'Yes' : 'No'}</p>
+                    <p><strong>Quantity:</strong> ${product.quantity || 'N/A'}</p>
+                    <p><strong>Views:</strong> ${product.views || '0'}</p>
+                    <p><strong>Sold Quantity:</strong> ${product.sold_quantity || '0'}</p>
+                    <p><strong>Rating:</strong> ${product.rating?.rate || 'N/A'} (${product.rating?.count || 0} reviews)</p>
+                    <p><strong>Weight:</strong> ${product.weight || 'N/A'} ${product.weight_type || ''}</p>
+                    <p><strong>URL:</strong> <a href="${product.url || '#'}" target="_blank">View Product</a></p>
+                    ${product.main_image ? `<p><strong>Image:</strong> <img src="${product.main_image}" alt="${product.name}" style="max-width: 100px; height: auto;"></p>` : ''}
+                    ${product.description ? `<p><strong>Description:</strong> ${product.description.substring(0, 100)}...</p>` : ''}
+                `;
+                logEvent(`Product details retrieved for ID: ${SAMPLE_PRODUCT_ID}`);
+            }).catch(error => {
+                infoDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                logEvent(`Error fetching product: ${error.message}`);
+            });
+        }
+        
+        function getCategories() {
+            if (typeof salla === 'undefined' || !salla.product) {
+                logEvent('Error: Salla SDK or product API not available');
+                return;
+            }
+            
+            // Fetch products from categories to get category info
+            const queryParams = {
+                source: 'categories',
+                source_value: 'all', // Get all categories
+                limit: 5
+            };
+            
+            salla.product.fetch(queryParams).then(response => {
+                const products = response.data;
+                logEvent(`Fetched products from categories. Found ${products.length} products`);
+                
+                // Extract unique categories from products
+                const categories = new Set();
+                products.forEach(product => {
+                    if (product.categories) {
+                        product.categories.forEach(cat => categories.add(cat.name));
+                    }
+                });
+                
+                logEvent(`Found ${categories.size} unique categories`);
+            }).catch(error => {
+                logEvent(`Error fetching categories: ${error.message}`);
+            });
+        }
+        
+        function logEvent(message) {
+            const eventLog = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            eventLog.appendChild(logEntry);
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+    </script>
+</body>
+</html>

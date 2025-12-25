@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salla Product API - All Endpoints</title>
+  <link rel="stylesheet" href="../../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../css/all.min.css">
+  <link rel="stylesheet" href="../../css/normalize.css">
+  <link rel="stylesheet" href="../../css/font-family.css">
+  <style>
+    .api-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+    .api-section h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    .result-box {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .btn-api {
+      margin: 5px;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden">
+  <nav id="header" class="navbar navbar-expand-lg p-3 w-100 position-fixed bg-dark">
+    <div class="container d-flex justify-content-between align-items-center gap-2">
+      <div class="d-flex justify-content-between align-items-center gap-3">
+        <a class="navbar-brand" href="../../index.html">
+          <img src="../../assets/logo2.png" alt="Mukhawara" height="40">
+        </a>
+        <span class="fw-bold text-white">Salla Product API Demo</span>
+      </div>
+      <a href="../salla-examples.html" class="btn btn-sm btn-light">Back to Examples</a>
+    </div>
+  </nav>
+
+  <main class="main-content" style="padding-top: 90px;">
+    <div class="container mt-4">
+      <h1 class="mb-4">Product API - All Endpoints</h1>
+      <p class="text-muted mb-4">
+        Complete implementation of all Salla Product APIs from 
+        <a href="https://docs.salla.dev/849354f0" target="_blank">Salla Documentation</a>
+      </p>
+
+      <!-- 1. Get Price -->
+      <div class="api-section">
+        <h3>1. Get Price</h3>
+        <div class="input-group">
+          <input type="number" id="priceProductId" class="form-control" placeholder="Product ID">
+          <button class="btn btn-primary btn-api" onclick="testGetPrice()">Get Price</button>
+        </div>
+        <div id="priceResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 2. Product Availability -->
+      <div class="api-section">
+        <h3>2. Product Availability (Subscribe)</h3>
+        <div class="input-group">
+          <input type="number" id="availabilityProductId" class="form-control" placeholder="Product ID">
+          <input type="email" id="availabilityEmail" class="form-control" placeholder="Email">
+          <button class="btn btn-primary btn-api" onclick="testAvailability()">Subscribe</button>
+        </div>
+        <div id="availabilityResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 3. Categories -->
+      <div class="api-section">
+        <h3>3. Get Category Products</h3>
+        <div class="input-group">
+          <input type="number" id="categoryId" class="form-control" placeholder="Category ID">
+          <input type="number" id="categoryPage" class="form-control" placeholder="Page" value="1">
+          <input type="number" id="categoryLimit" class="form-control" placeholder="Limit" value="20">
+          <button class="btn btn-primary btn-api" onclick="testCategories()">Get Products</button>
+        </div>
+        <div id="categoryResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 4. Offer Details -->
+      <div class="api-section">
+        <h3>4. Get Offer Details</h3>
+        <div class="input-group">
+          <input type="number" id="offerProductId" class="form-control" placeholder="Product ID">
+          <button class="btn btn-primary btn-api" onclick="testOfferDetails()">Get Offers</button>
+        </div>
+        <div id="offerResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 5. Search Products -->
+      <div class="api-section">
+        <h3>5. Search Products</h3>
+        <p class="text-muted small mb-2">
+          <strong>Search by:</strong> Product name (e.g., "6", "5", "cotton"), description, SKU, or keywords.
+          <br>Examples: Try searching for "6", "5", "4", "cotton", "fabric", etc.
+        </p>
+        <div class="input-group">
+          <input type="text" id="searchQuery" class="form-control" placeholder="Enter product name, keyword, or SKU">
+          <input type="number" id="searchLimit" class="form-control" placeholder="Limit" value="20">
+          <button class="btn btn-primary btn-api" onclick="testSearch()">Search</button>
+        </div>
+        <div id="searchResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 6. Get Gift Details -->
+      <div class="api-section">
+        <h3>6. Get Gift Details</h3>
+        <div class="input-group">
+          <input type="number" id="giftId" class="form-control" placeholder="Gift ID">
+          <button class="btn btn-primary btn-api" onclick="testGiftDetails()">Get Gift</button>
+        </div>
+        <div id="giftResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 7. Add Gift To Cart -->
+      <div class="api-section">
+        <h3>7. Add Gift To Cart</h3>
+        <div class="input-group">
+          <input type="number" id="giftCartId" class="form-control" placeholder="Gift ID">
+          <button class="btn btn-primary btn-api" onclick="testAddGiftToCart()">Add to Cart</button>
+        </div>
+        <div id="giftCartResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 8. Upload Gift Image -->
+      <div class="api-section">
+        <h3>8. Upload Gift Image</h3>
+        <div class="input-group">
+          <input type="number" id="giftImageId" class="form-control" placeholder="Gift ID">
+          <input type="file" id="giftImageFile" class="form-control" accept="image/*">
+          <button class="btn btn-primary btn-api" onclick="testUploadGiftImage()">Upload</button>
+        </div>
+        <div id="giftImageResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 9. Get Product Details -->
+      <div class="api-section">
+        <h3>9. Get Product Details</h3>
+        <div class="input-group">
+          <input type="number" id="detailsProductId" class="form-control" placeholder="Product ID">
+          <button class="btn btn-primary btn-api" onclick="testProductDetails()">Get Details</button>
+        </div>
+        <div id="detailsResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 10. Fetch Products -->
+      <div class="api-section">
+        <h3>10. Fetch Products</h3>
+        <p class="text-muted small mb-2">
+          <strong>Note:</strong> Sort is not supported by Salla API. Use source types to filter products.
+          <br><strong>Includes:</strong> Only ["options"] is supported to include product options.
+        </p>
+        <div class="input-group flex-wrap">
+          <select id="fetchSource" class="form-control">
+            <option value="latest">Latest</option>
+            <option value="categories">Categories</option>
+            <option value="related">Related</option>
+            <option value="brands">Brands</option>
+            <option value="search">Search</option>
+            <option value="tags">Tags</option>
+            <option value="selected">Selected</option>
+            <option value="offers">Offers</option>
+            <option value="landing-page">Landing Page</option>
+          </select>
+          <input type="text" id="fetchSourceValue" class="form-control" placeholder="Source Value (optional)" style="min-width: 120px;">
+          <input type="number" id="fetchLimit" class="form-control" placeholder="Limit" value="20" style="min-width: 80px;">
+          <input type="number" id="fetchPage" class="form-control" placeholder="Page" value="1" style="min-width: 80px;">
+          <label class="form-control d-flex align-items-center" style="min-width: 120px;">
+            <input type="checkbox" id="fetchIncludeOptions" class="me-2"> Include Options
+          </label>
+          <button class="btn btn-primary btn-api" onclick="testFetchProducts()">Fetch</button>
+        </div>
+        <div id="fetchResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 11. Fetch Options -->
+      <div class="api-section">
+        <h3>11. Fetch Options (Reviews, Ratings, etc.)</h3>
+        <div class="input-group">
+          <input type="number" id="optionsProductId" class="form-control" placeholder="Product ID">
+          <button class="btn btn-primary btn-api" onclick="testFetchOptions()">Fetch Options</button>
+        </div>
+        <div id="optionsResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 12. Size Guides -->
+      <div class="api-section">
+        <h3>12. Get Size Guide</h3>
+        <div class="input-group">
+          <input type="number" id="sizeGuideProductId" class="form-control" placeholder="Product ID">
+          <button class="btn btn-primary btn-api" onclick="testSizeGuide()">Get Size Guide</button>
+        </div>
+        <div id="sizeGuideResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- 13. Get Categories -->
+      <div class="api-section">
+        <h3>13. Get Categories</h3>
+        <div class="input-group">
+          <input type="number" id="categoriesPage" class="form-control" placeholder="Page" value="1">
+          <input type="number" id="categoriesLimit" class="form-control" placeholder="Limit" value="50">
+          <button class="btn btn-primary btn-api" onclick="testGetCategories()">Get Categories</button>
+        </div>
+        <div id="categoriesResult" class="result-box d-none"></div>
+      </div>
+
+      <!-- Helper Methods -->
+      <div class="api-section">
+        <h3>Helper Methods - Quick Access</h3>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <button class="btn btn-success btn-api" onclick="testGetLatestProducts()">Get Latest</button>
+          <button class="btn btn-success btn-api" onclick="testGetOffersProducts()">Get Offers</button>
+          <button class="btn btn-success btn-api" onclick="testGetProductsByCategory()">Get by Category</button>
+          <button class="btn btn-success btn-api" onclick="testGetRelatedProducts()">Get Related</button>
+          <button class="btn btn-success btn-api" onclick="testGetProductsByBrand()">Get by Brand</button>
+        </div>
+        <div id="helperResult" class="result-box d-none"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Twilight SDK -->
+  <script src="https://cdn.salla.network/js/twilight/latest/twilight.js"></script>
+  <script src="product-api.js"></script>
+  <script>
+    let productAPI;
+
+    // Initialize
+    async function init() {
+      if (typeof salla === 'undefined') {
+        setTimeout(init, 500);
+        return;
+      }
+
+      try {
+        salla.init({
+          debug: true,
+          language_code: 'ar',
+          store: {
+            id: 229278595,
+            url: 'https://api.salla.dev/store/v1'
+          }
+        });
+
+        productAPI = getSallaProductAPI();
+        console.log('Product API initialized');
+      } catch (error) {
+        console.error('Init error:', error);
+      }
+    }
+
+    // Helper function to display results
+    function showResult(elementId, data, isError = false) {
+      const element = document.getElementById(elementId);
+      element.classList.remove('d-none');
+      element.style.backgroundColor = isError ? '#fee' : '#efe';
+      element.textContent = JSON.stringify(data, null, 2);
+    }
+
+    // Test functions
+    async function testGetPrice() {
+      const productId = document.getElementById('priceProductId').value;
+      if (!productId) {
+        alert('Please enter Product ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getPrice(parseInt(productId));
+        showResult('priceResult', result);
+      } catch (error) {
+        showResult('priceResult', error, true);
+      }
+    }
+
+    async function testAvailability() {
+      const productId = document.getElementById('availabilityProductId').value;
+      const email = document.getElementById('availabilityEmail').value;
+      if (!productId || !email) {
+        alert('Please enter Product ID and Email');
+        return;
+      }
+      try {
+        const result = await productAPI.subscribeToAvailability(parseInt(productId), email);
+        showResult('availabilityResult', result);
+      } catch (error) {
+        showResult('availabilityResult', error, true);
+      }
+    }
+
+    async function testCategories() {
+      const categoryId = document.getElementById('categoryId').value;
+      const page = document.getElementById('categoryPage').value || 1;
+      const limit = document.getElementById('categoryLimit').value || 20;
+      if (!categoryId) {
+        alert('Please enter Category ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getCategoryProducts(parseInt(categoryId), {
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+        showResult('categoryResult', result);
+      } catch (error) {
+        showResult('categoryResult', error, true);
+      }
+    }
+
+    async function testOfferDetails() {
+      const productId = document.getElementById('offerProductId').value;
+      if (!productId) {
+        alert('Please enter Product ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getOfferDetails(parseInt(productId));
+        showResult('offerResult', result);
+      } catch (error) {
+        showResult('offerResult', error, true);
+      }
+    }
+
+    async function testSearch() {
+      const query = document.getElementById('searchQuery').value;
+      const limit = document.getElementById('searchLimit').value || 20;
+      if (!query) {
+        alert('Please enter search query');
+        return;
+      }
+      try {
+        const result = await productAPI.searchProducts(query, { limit: parseInt(limit) });
+        showResult('searchResult', result);
+      } catch (error) {
+        showResult('searchResult', error, true);
+      }
+    }
+
+    async function testGiftDetails() {
+      const giftId = document.getElementById('giftId').value;
+      if (!giftId) {
+        alert('Please enter Gift ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getGiftDetails(parseInt(giftId));
+        showResult('giftResult', result);
+      } catch (error) {
+        showResult('giftResult', error, true);
+      }
+    }
+
+    async function testAddGiftToCart() {
+      const giftId = document.getElementById('giftCartId').value;
+      if (!giftId) {
+        alert('Please enter Gift ID');
+        return;
+      }
+      try {
+        const result = await productAPI.addGiftToCart(parseInt(giftId));
+        showResult('giftCartResult', result);
+      } catch (error) {
+        showResult('giftCartResult', error, true);
+      }
+    }
+
+    async function testUploadGiftImage() {
+      const giftId = document.getElementById('giftImageId').value;
+      const file = document.getElementById('giftImageFile').files[0];
+      if (!giftId || !file) {
+        alert('Please enter Gift ID and select image file');
+        return;
+      }
+      try {
+        const result = await productAPI.uploadGiftImage(parseInt(giftId), file);
+        showResult('giftImageResult', result);
+      } catch (error) {
+        showResult('giftImageResult', error, true);
+      }
+    }
+
+    async function testProductDetails() {
+      const productId = document.getElementById('detailsProductId').value;
+      if (!productId) {
+        alert('Please enter Product ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getProductDetails(parseInt(productId));
+        showResult('detailsResult', result);
+      } catch (error) {
+        showResult('detailsResult', error, true);
+      }
+    }
+
+    async function testFetchProducts() {
+      const sourceSelect = document.getElementById('fetchSource');
+      const source = sourceSelect ? sourceSelect.value : 'latest';
+      const sourceValue = document.getElementById('fetchSourceValue').value.trim();
+      const limit = document.getElementById('fetchLimit').value || 20;
+      const page = document.getElementById('fetchPage').value || 1;
+      const includeOptions = document.getElementById('fetchIncludeOptions').checked;
+      
+      try {
+        // Always ensure source is provided
+        const params = {
+          source: source || 'latest',  // Default to 'latest' if empty
+          limit: parseInt(limit) || 20,
+          page: parseInt(page) || 1
+        };
+        
+        // Add sourceValue if provided (required for some sources like categories, brands)
+        if (sourceValue) {
+          // Try to parse as number if it's numeric, otherwise keep as string
+          const numValue = parseInt(sourceValue);
+          params.sourceValue = isNaN(numValue) ? sourceValue : numValue;
+        }
+        
+        // Add includes if options checkbox is checked
+        if (includeOptions) {
+          params.includes = ['options'];
+        }
+        
+        // Validate source before calling
+        if (!params.source || params.source.trim() === '') {
+          params.source = 'latest';
+        }
+        
+        const result = await productAPI.fetchProducts(params);
+        showResult('fetchResult', result);
+      } catch (error) {
+        showResult('fetchResult', error, true);
+      }
+    }
+
+    async function testFetchOptions() {
+      const productId = document.getElementById('optionsProductId').value;
+      if (!productId) {
+        alert('Please enter Product ID');
+        return;
+      }
+      try {
+        // fetchOptions now accepts productId directly (converts to array internally)
+        const result = await productAPI.fetchOptions(parseInt(productId));
+        showResult('optionsResult', result);
+      } catch (error) {
+        showResult('optionsResult', error, true);
+      }
+    }
+
+    async function testGetCategories() {
+      const page = document.getElementById('categoriesPage').value || 1;
+      const limit = document.getElementById('categoriesLimit').value || 50;
+      try {
+        const result = await productAPI.getCategories({
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+        showResult('categoriesResult', result);
+      } catch (error) {
+        showResult('categoriesResult', error, true);
+      }
+    }
+
+    async function testSizeGuide() {
+      const productId = document.getElementById('sizeGuideProductId').value;
+      if (!productId) {
+        alert('Please enter Product ID');
+        return;
+      }
+      try {
+        const result = await productAPI.getSizeGuide(parseInt(productId));
+        showResult('sizeGuideResult', result);
+      } catch (error) {
+        showResult('sizeGuideResult', error, true);
+      }
+    }
+
+    // Helper methods
+    async function testGetLatestProducts() {
+      try {
+        const result = await productAPI.getLatestProducts(10);
+        showResult('helperResult', result);
+      } catch (error) {
+        showResult('helperResult', error, true);
+      }
+    }
+
+    async function testGetOffersProducts() {
+      try {
+        const result = await productAPI.getOffersProducts(10);
+        showResult('helperResult', result);
+      } catch (error) {
+        showResult('helperResult', error, true);
+      }
+    }
+
+    async function testGetProductsByCategory() {
+      const categoryId = prompt('Enter Category ID:');
+      if (!categoryId) return;
+      try {
+        const result = await productAPI.getProductsByCategoryId(parseInt(categoryId), 10);
+        showResult('helperResult', result);
+      } catch (error) {
+        showResult('helperResult', error, true);
+      }
+    }
+
+    async function testGetRelatedProducts() {
+      const productId = prompt('Enter Product ID to get related products:');
+      if (!productId) return;
+      try {
+        const result = await productAPI.getRelatedProducts(parseInt(productId), 10);
+        showResult('helperResult', result);
+      } catch (error) {
+        showResult('helperResult', error, true);
+      }
+    }
+
+    async function testGetProductsByBrand() {
+      const brandId = prompt('Enter Brand ID:');
+      if (!brandId) return;
+      try {
+        const result = await productAPI.getProductsByBrand(parseInt(brandId), 10);
+        showResult('helperResult', result);
+      } catch (error) {
+        showResult('helperResult', error, true);
+      }
+    }
+
+    // Initialize on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+
