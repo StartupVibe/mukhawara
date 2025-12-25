@@ -1,0 +1,167 @@
+/* ===================================================== */
+/* start item data-anim */
+/* ===================================================== */
+*[data-anim] {
+  opacity: 0;
+  transition: opacity var(--fade-duration, 1s) ease,
+    transform var(--fade-duration, 1s) ease;
+}
+
+/* ===================================================== */
+/* types fade*/
+/* ===================================================== */
+[data-anim="fade-in"].visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-anim="fade-out"].visible {
+  opacity: 0;
+  transform: none;
+}
+
+/* fade-up */
+[data-anim="fade-up"] {
+  transform: translateY(30px);
+}
+
+[data-anim="fade-up"].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* fade-down */
+[data-anim="fade-down"] {
+  transform: translateY(-30px);
+}
+
+[data-anim="fade-down"].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* fade-left */
+[data-anim="fade-left"] {
+  transform: translateX(-30px);
+}
+
+[data-anim="fade-left"].visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* fade-right */
+[data-anim="fade-right"] {
+  transform: translateX(30px);
+}
+
+[data-anim="fade-right"].visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===================================================== */
+/* Zoom Animations */
+/* ===================================================== */
+[data-anim="zoom-in"] {
+  transform: scale(0.8);
+}
+
+[data-anim="zoom-in"].visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+[data-anim="zoom-out"] {
+  transform: scale(1.2);
+}
+
+[data-anim="zoom-out"].visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ===================================================== */
+/*  Rotate Animations */
+/* ===================================================== */
+[data-anim="rotate-in"] {
+  transform: rotate(-10deg);
+}
+
+[data-anim="rotate-in"].visible {
+  opacity: 1;
+  transform: rotate(0);
+}
+
+[data-anim="rotate-out"] {
+  transform: rotate(10deg);
+}
+
+[data-anim="rotate-out"].visible {
+  opacity: 1;
+  transform: rotate(0);
+}
+
+/* ===================================================== */
+/* Flip Animations */
+/* ===================================================== */
+[data-anim="flip-x"] {
+  transform: rotateX(90deg);
+  transform-origin: center;
+}
+
+[data-anim="flip-x"].visible {
+  opacity: 1;
+  transform: rotateX(0);
+}
+
+[data-anim="flip-y"] {
+  transform: rotateY(90deg);
+  transform-origin: center;
+}
+
+[data-anim="flip-y"].visible {
+  opacity: 1;
+  transform: rotateY(0);
+}
+
+/* ===================================================== */
+/*  Scale Animations */
+/* ===================================================== */
+[data-anim="scale-up"] {
+  transform: scale(0.5);
+}
+
+[data-anim="scale-up"].visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+[data-anim="scale-down"] {
+  transform: scale(1.5);
+}
+
+[data-anim="scale-down"].visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+[data-anim="scale-left"] {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+[data-anim="scale-left"].visible {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+[data-anim="scale-right"] {
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+[data-anim="scale-right"].visible {
+  opacity: 1;
+  transform: scaleX(1);
+}

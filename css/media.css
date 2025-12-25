@@ -1,0 +1,185 @@
+@media (max-width: 768px) {
+
+  /* nav */
+  nav {
+    .navbar-ul {
+      height: 150vh;
+    }
+
+    .search input {
+      width: 12rem;
+    }
+  }
+
+  /* shooping-cart */
+  .Shopping-cart {
+    width: 100%;
+    height: 150vh;
+  }
+
+  /* carousel */
+  .carousel {
+    margin-top: 9rem;
+
+    .cyrcle {
+      display: none;
+    }
+
+    .banner-text {
+      padding: 0;
+    }
+  }
+
+  .banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  /* main section */
+  .main-section {
+    margin-top: 8rem;
+
+    .text {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 4rem;
+
+      h1 {
+        font-size: 3rem !important;
+      }
+    }
+
+    .row {
+      gap: 30px;
+    }
+
+    svg {
+      display: none;
+    }
+
+    margin-bottom: 7rem;
+  }
+
+  /* Bestselling */
+  #Bestselling {
+    margin: 0 !important;
+  }
+
+  /* product */
+  .products {
+    margin-top: 12rem !important;
+
+    .row {
+      .card {
+        height: 100%;
+        justify-content: space-between;
+
+        img {
+          height: 200px;
+        }
+
+        h4 {
+          font-size: 14px !important;
+        }
+
+        .add {
+          button {
+            padding: 5px 10px;
+            font-size: 15px;
+          }
+        }
+      }
+    }
+  }
+
+  /* Bestselling */
+  #Bestselling {
+    .head-section h3 {
+      font-size: 25px !important;
+    }
+  }
+
+  /* gallery */
+  section.gallery {
+    flex-direction: column-reverse;
+    align-items: center;
+
+    #mainImag {
+      width: 80%;
+    }
+
+    .main-img-wrap {
+      width: fit-content;
+      height: fit-content;
+      text-align: center;
+      align-content: center;
+    }
+
+    .left-img {
+      flex-direction: row;
+    }
+  }
+
+  /* item */
+  section.item {
+
+    .row {
+      gap: 30px;
+    }
+  }
+
+  /* about page */
+  .about {
+    h1 {
+      span {
+        font-size: 20px;
+      }
+    }
+
+    p {
+      width: 100%;
+    }
+  }
+
+  /* .login */
+
+  .login-page .login {
+    .content {
+      width: 22rem;
+    }
+  }
+
+  .true-edit-password {
+    .content {
+      width: 22rem;
+    }
+  }
+
+  .verify-box {
+    width: 22rem !important;
+  }
+
+  /* contact page */
+  .contact-section {
+    margin: 6rem 1rem 0;
+  }
+
+  /* bottom-footer */
+
+  .bottom-footer {
+    .row {
+      position: relative;
+      right: 20px;
+      gap: 20px;
+
+      .col-12.col-lg-4 {
+        padding: 0 !important;
+        display: flex;
+      }
+    }
+  }
+
+}
